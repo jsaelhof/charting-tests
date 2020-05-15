@@ -5,9 +5,7 @@ import moment from "moment";
 import {plungerCycleArrival} from "../../constants/plunger-cycle-arrival";
 import last from "lodash/last";
 import first from "lodash/first";
-import {ticksForDomain} from "../../utils/ticks-from-domain";
 import {ResponsiveScatterPlot} from "@nivo/scatterplot";
-import {ResponsiveBullet} from "@nivo/bullet";
 import {theme} from "../../theme/theme";
 import {SizeMe} from "react-sizeme";
 import {scaleTime} from "d3-scale";
@@ -42,7 +40,8 @@ const buildCycleComponent = (width, domain, cycleFocus) => ({node}) => {
   const x2 = xFunctor(node.data.endDate);
 
   // Gather some state to determine how to color each node.
-  const hovered = cycleFocus.getTime() === node.data.date.getTime();
+  if (cycleFocus) console.log(cycleFocus);
+  const hovered = cycleFocus && cycleFocus === node.data.date.getTime();
   const userIsHovering = cycleFocus !== null;
 
   // Return the SVG Rect for the cycle.
@@ -133,7 +132,6 @@ const CyclesChart = () => {
                   }}
                   margin={{top: 0, right: 80, bottom: 20, left: 0}}
                   axisLeft={{
-                    //tickValues: [0, 1],
                     tickSize: 0,
                     format: () => null,
                   }}
@@ -178,66 +176,6 @@ const CyclesChart = () => {
             );
           }}
         </SizeMe>
-
-        {/* <ScatterChart margin={{top: 20, right: 100, bottom: 0, left: 10}}>
-          <Scatter
-            data={series}
-            dataKey={"y"}
-            shape={<Cycle />}
-            onMouseOver={(e) => setCycleFocus(e.date)}
-            onMouseOut={(e) => setCycleFocus(null)}
-          />
-
-          <XAxis
-            // The domain of the data to display.
-            // Recharts provides some cool options for this over React-Vis but ultimately I needed to
-            // know the dates for calculating ticks.
-            domain={["dataMin", "dataMax"]}
-            // Helps Recharts know we are plotting time.
-            // When setting time you must set type="number" and provide a domain.
-            scale="time"
-            // Required when using scale="time"
-            type="number"
-            // The key in each data object to use as the X value.
-            // This can be a string label or it can be a function that transforms the data.
-            // (for example, this could transfrom the unix timestamp to a moment object)
-            dataKey={"date"}
-            // Manually define which ticks to use.
-            // Recharts can auto generate ticks but i'm finding that the can be a bit weird in a time-series.
-            // They can appear spaced unevenly.
-            // Here i'm taking control by using the domain of the data to generate ticks where I think they would be best.
-            ticks={ticks}
-            // Format the tick value. "date" is a unix timestamp here.
-            tickFormatter={(date) => {
-              const m = moment(date).utc();
-              return m.format("MM/DD");
-            }}
-            // Length of the tick line in pixels. 0 hides them. The ticks are being hidden during the animated zoom in/out transition.
-            //tickSize={showTicks ? 10 : 0}
-            // How far to draw the tick labels from the tick lines
-            //tickMargin={5}
-            // Some simple tick styling using a configuration object
-            // tick={{
-            //   fill: "rgba(0,0,0,0.6)",
-            //   textAnchor: "start",
-            //   fontSize: "0.7em",
-            // }}
-            // This helps trim the series so they don't draw outside the axes
-            allowDataOverflow={true}
-            // Recharts figures out which ticks to show by default.
-            // When you give it your own ticks like we are, it will still remove some of them by default if
-            // the width of a tick crashes into it's neighbor. When it does this you can wind up with
-            // uneven ticks due to somee ticks beeing wider than others (depending on the width of the measured text).
-            // This value sets a minimum tick width. By using 20 here, which is wider than any of my ticks, it helps to make
-            // sure that the ticks measure at a consistent size and maintian even spacing.
-            // Another option is to use interval={0} which tells Recharts to use all of the provided ticks regardless of
-            // whether they crash into each other or not. If I was using that, I would make sure my tick generator did its
-            // own work to ensure ticks were not too close together.
-            //minTickGap={20}
-          />
-
-          <YAxis tickSize={0} tickFormatter={() => ""} /> */}
-        {/* </ScatterChart> */}
       </div>
     </div>
   );
